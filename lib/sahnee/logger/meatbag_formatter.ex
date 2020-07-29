@@ -33,7 +33,19 @@ defmodule Sahnee.Logger.MeatbagFormatter do
   def format_metadata([]), do: ""
 
   def format_metadata([{key, value} | next]) do
-    "\n    #{key}: #{inspect(value)}" <> format_metadata(next)
+    # According to ducmentation metadata is always a keyword list
+    # but the Logger.metadata does not actually guard against non-
+    # atom keys, allowing metadata to esentially be a tuple list
+    # with arbitrary keys.
+    # https://hexdocs.pm/logger/Logger.html#t:metadata/0
+    key_str =
+      case key do
+        key when is_atom(key) -> Atom.to_string(key)
+        key when is_binary(key) -> key
+        key -> inspect(key)
+      end
+
+    "\n    #{key_str}: #{inspect(value)}" <> format_metadata(next)
   end
 
   defp sanitize_module_name(module) do
