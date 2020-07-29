@@ -3,16 +3,19 @@ defmodule Sahnee.Logger.MeatbagFormatter do
   Formatter for sahnee logs. Typically used for human readable output.
   """
 
+  # Some metadata is not relevant for human consumtion.
+  @ignored_meta [:file, :ansi_color, :mfa, :domain, :gl, :time]
+
   def format(level, message, timestamp, metadata) do
     # Read opts
+    {application, metadata} = Keyword.pop(metadata, :application)
     {module, metadata} = Keyword.pop(metadata, :module)
     {function, metadata} = Keyword.pop(metadata, :function)
     {line, metadata} = Keyword.pop(metadata, :line)
     {pid, metadata} = Keyword.pop(metadata, :pid)
     {registered_name, metadata} = Keyword.pop(metadata, :registered_name)
     # Drop stuff we don't want displayed
-    metadata =
-      Keyword.drop(metadata, [:file, :application, :ansi_color, :mfa, :domain, :gl, :time])
+    metadata = Keyword.drop(metadata, @ignored_meta)
 
     # Format stuff
     name = if registered_name, do: registered_name, else: pid
@@ -20,17 +23,17 @@ defmodule Sahnee.Logger.MeatbagFormatter do
     module_str = module |> sanitize_module_name()
     level_str = String.pad_trailing("[#{level}]", 7)
     time_str = "#{pad_num(hh, 2)}:#{pad_num(mm, 2)}:#{pad_num(ss, 2)}-#{pad_num(micro, 3)}"
-
-    meta_str =
-      if metadata !== [] do
-        "\n #{inspect(metadata)}"
-      else
-        ""
-      end
+    meta_str = format_metadata(metadata)
 
     "[#{time_str}] #{level_str} " <>
-      "[#{inspect(name)}@#{module_str}.#{function}:#{line}] " <>
+      "[#{application} | #{inspect(name)}@#{module_str}.#{function}:#{line}] " <>
       "#{message}#{meta_str}\n"
+  end
+
+  def format_metadata([]), do: ""
+
+  def format_metadata([{key, value} | next]) do
+    "    #{key}: #{inspect(value)}" <> format_metadata(next)
   end
 
   defp sanitize_module_name(module) do
