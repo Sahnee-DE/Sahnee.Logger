@@ -33,7 +33,7 @@ defmodule Sahnee.Logger.MeatbagFormatter do
   def format_metadata([]), do: ""
 
   def format_metadata([{key, value} | next]) do
-    "    #{key}: #{inspect(value)}" <> format_metadata(next)
+    "\n    #{key}: #{inspect(value)}" <> format_metadata(next)
   end
 
   defp sanitize_module_name(module) do
