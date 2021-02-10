@@ -13,7 +13,7 @@ The package can be installed by adding `sahnee_logger` to your list of dependenc
 ```elixir
 def deps do
   [
-    {:sahnee_logger, git: "ssh://git@appsrv01.sahnee.internal:7999/lib/ex-sahnee.logger.git", tag: "<tag here>"}
+    {:sahnee_logger, git: "ssh://git@github.com:Sahnee-DE/Sahnee.Logger.git", tag: "<tag here>"}
   ]
 end
 ```
