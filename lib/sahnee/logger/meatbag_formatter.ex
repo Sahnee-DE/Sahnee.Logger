@@ -4,7 +4,7 @@ defmodule Sahnee.Logger.MeatbagFormatter do
   """
 
   # Some metadata is not relevant for human consumtion.
-  @ignored_meta [:file, :ansi_color, :mfa, :domain, :gl, :time]
+  @ignored_meta [:file, :ansi_color, :mfa, :domain, :gl, :time, :erl_level]
 
   def format(level, message, timestamp, metadata) do
     # Read opts
